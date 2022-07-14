@@ -1,0 +1,73 @@
+repos:
+- repo: "local"
+  hooks:
+    - id: "removestar"
+      name: "removestar"
+      stages: ["commit"]
+      language: "system"
+      entry: "removestar -i ${NAME}"
+      types: ["python"]
+    - id: "isort"
+      name: "isort"
+      stages: ["commit"]
+      language: "system"
+      entry: "isort"
+      types: ["python"]
+    - id: "black"
+      name: "black"
+      stages: ["commit"]
+      language: "system"
+      entry: "bash -c 'black .'"
+      types: ["python"]
+    - id: "yesqa"
+      name: "yesqa"
+      stages: ["commit"]
+      language: "system"
+      pass_filenames: false
+      entry: "yesqa"
+      types: ["python"]
+    - id: "flake8"
+      name: "flake8"
+      stages: ["commit"]
+      language: "system"
+      entry: "flake8"
+      types: ["python"]
+    - id: "mypy"
+      name: "mypy"
+      stages: ["commit"]
+      language: "system"
+      entry: "mypy"
+      types: ["python"]
+      pass_filenames: false
+    - id: "dotenv-linter"
+      name: "dotenv-linter"
+      entry: "dotenv-linter"
+      language: "system"
+      stages: ["commit"]
+      types: ["text"]
+      files: '\.env*'
+      exclude: ".envrc|.env.j2"
+    - id: "rstcheck"
+      name: "rstcheck"
+      entry: "rstcheck"
+      language: "system"
+      stages: ["commit"]
+      types: ["rst"]
+-   repo: "https://github.com/pre-commit/pre-commit-hooks"
+    rev: "v4.1.0"
+    hooks:
+      - id: "check-added-large-files"
+        args: ["--maxkb=2048"]
+      - id: "check-ast"
+      - id: "check-case-conflict"
+      - id: "check-docstring-first"
+      - id: "check-executables-have-shebangs"
+      - id: "check-merge-conflict"
+      - id: "check-symlinks"
+      - id: "check-toml"
+      - id: "check-yaml"
+      - id: "debug-statements"
+      - id: "detect-private-key"
+      - id: "end-of-file-fixer"
+      - id: "forbid-new-submodules"
+      - id: "trailing-whitespace"
