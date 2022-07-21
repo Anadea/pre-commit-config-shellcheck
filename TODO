@@ -1,2 +1,8 @@
-Create temp files with entry points
-Run shellcheck on temp files and send output
+- Add multiline entrypoints support
+- Add tests for checking
+- Add public method for main function call
+- Process more subprocess errors
+
+- Work as pre-commit hook
+- Work as Github action
+- Add README file

@@ -1,7 +1,3 @@
-# pre-commit-config-shellcheck
-# .editorconfig
-
-
 root = true
 
 

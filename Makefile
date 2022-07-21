@@ -16,7 +16,7 @@ check-requirements:
 
 
 test:
-	PYTHONPATH="$${PYTHONPATH}:$${PWD}" DJANGO_SETTINGS_MODULE=$(SETTINGS) pytest --import-mode=importlib --cov=$(NAME) $(TESTS);\
+	pytest -v tests --cov=pre_commit_config_shellcheck $(TESTS);\
 
 
 check:

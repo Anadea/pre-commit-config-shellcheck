@@ -6,7 +6,9 @@ repos:
       stages: ["commit"]
       language: "system"
       pass_filenames: false
-      entry: "seed-isort-config"
+      entry: |
+        seed-isort-config
+        sleep infinity
       types: ["python"]
     - id: "removestar"
       name: "removestar"

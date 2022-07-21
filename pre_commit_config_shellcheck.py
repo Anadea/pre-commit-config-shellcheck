@@ -1,8 +1,14 @@
 #!/usr/bin/env python
+
+
 import os
+import re
 import sys
+import tempfile
+import subprocess
+from subprocess import TimeoutExpired
+from typing import Any, Dict, List, Union
 from argparse import Namespace, ArgumentParser
-from typing import Any, Dict, List, Tuple, Union
 
 import yaml
 from yaml.scanner import ScannerError
@@ -31,6 +37,7 @@ class CustomLoader(Loader):
         """
         node = super().compose_node(parent=parent, index=index)
         node.__line__ = self.line + 1  # type: ignore
+
         return node
 
     def construct_mapping(self, node: Node, deep: bool = False) -> Dict[str, Any]:
@@ -57,6 +64,7 @@ class CustomLoader(Loader):
             node_pair_lst_for_appending.append((shadow_key_node, shadow_value_node))
 
         node.value += node_pair_lst_for_appending
+
         return super().construct_mapping(node=node, deep=deep)  # type: ignore
 
 
@@ -67,7 +75,8 @@ class Shellcheck:
         """Get command line args."""
         self.options: Namespace = self._get_options()
 
-    def _get_options(self) -> Namespace:
+    @staticmethod
+    def _get_options() -> Namespace:
         """
         Parse commandline options arguments.
 
@@ -86,6 +95,16 @@ class Shellcheck:
             metavar="PATH",
             help="file to check",
         )
+        parser.add_argument(
+            "-s",
+            "--shellcheck",
+            action="store",
+            dest="shellcheck",
+            type=str,
+            default="shellcheck",
+            metavar="SHELLCHECK",
+            help="shellcheck path",
+        )
 
         options: Namespace = parser.parse_args()
 
@@ -102,63 +121,140 @@ class Shellcheck:
         """
         try:
             with open(self.options.path) as stream:
-                file: Dict[str, Any] = yaml.load(stream=stream, Loader=CustomLoader)
+                file_: Dict[str, Any] = yaml.load(stream=stream, Loader=CustomLoader)
         except FileNotFoundError:
-            sys.stderr.write(f"No file {self.options.path} found")
+            sys.stderr.write(f"No file {self.options.path} found\n")
             sys.exit(os.EX_OSFILE)
         except ScannerError:
-            sys.stderr.write(f"{self.options.path} is not a YAML file")
+            sys.stderr.write(f"{self.options.path} is not a YAML file\n")
             sys.exit(os.EX_IOERR)
 
-        return file
+        return file_
 
     def _find_entries(  # noqa: CCR001
         self, yaml_file: Dict[str, Any]
-    ) -> List[Dict[str, Tuple[int, str]]]:
+    ) -> List[Dict[str, Dict[str, Union[int, str]]]]:
         """
         Find all entries in provided YAML file.
 
         :param yaml_file: constructed mapping of read YAML file
         :type yaml_file: Dict[str, Any]
         :return: list of ids and entries with number of lines they are attached to
-        :rtype: List[Dict[str, Tuple[int, str]]]
+        :rtype: List[Dict[str, Dict[str, Union[int, str]]]]
         """
-        result: List[Dict[str, Tuple[int, str]]] = []
-        for repository in yaml_file.get("repos", []):
-            for hook in repository.get("hooks", []):
-                if "entry" in hook:
-                    result.append(
-                        {
-                            "id": (hook["__line__id"], hook["id"]),
-                            "entry": (hook["__line__entry"], hook["entry"]),
-                        }
-                    )
+        result: List[Dict[str, Dict[str, Union[int, str]]]] = []
+        try:
+            for repository in yaml_file.get("repos", []):
+                for hook in repository.get("hooks", []):
+                    if "entry" in hook:
+                        result.append(
+                            {
+                                "id": {"line": hook["__line__id"], "id": hook["id"]},
+                                "entry": {
+                                    "line": hook["__line__entry"],
+                                    "entry": hook["entry"],
+                                },
+                            }
+                        )
+        except TypeError:
+            sys.stderr.write(
+                f"An error happened while checking {self.options.path} file: incorrect format\n"  # noqa: E501
+            )
+            sys.exit(os.EX_IOERR)
+
         return result
 
-    def list_entries(
+    def _list_entries(
         self,
-    ) -> Union[List[Dict[str, Tuple[int, str]]], None]:  # noqa: SIM907
+    ) -> List[Dict[str, Dict[str, Union[int, str]]]]:  # noqa: SIM907
         """
         Parse requested file and find all entries in it.
 
-        :return: list of ids and entries with number of lines
-            they are attached to or None if no entries are found
-        :rtype: Union[List[Dict[str, Tuple[int, str]]], None]
+        :return: list of ids and entries with number of lines they are attached to
+        :rtype: List[Dict[str, Dict[str, Union[int, str]]]]
         """
         file = self._parse_file()
         if file:
             result = self._find_entries(file)
             if result:
+
                 return result
-        return None
+
+        return []
+
+    @staticmethod
+    def _write_output(
+        entry: Dict[str, Dict[str, Union[int, str]]], output: str
+    ) -> None:
+        """
+        Edit and write shellcheck output.
+
+        :param entry: entry data to insert into output
+        :type entry: Dict[str, Dict[str, Union[int, str]]]
+        :param output: base output to edit and process
+        :type output: str
+        """
+        #
+        regular = re.findall(r"In entry \".*\" (?P<switch>line (?P<line>\d+))", output)
+        for line_number in regular:
+            # subtract 2 because of number of lines difference
+            # in temporary file and source file
+            entry_line = int(entry["entry"]["line"])
+            new_line_number = (entry_line + int(line_number[1])) - 2
+
+            output = output.replace(
+                line_number[0],
+                f"on line {new_line_number}",
+            )
+        sys.stdout.write(output)
+
+    def _check_entries(self) -> None:
+        """Check the created file for possible entrypoints corrections."""
+        for entry in self._list_entries():
+            with tempfile.NamedTemporaryFile("w+") as tmp_file:
+                tmp_file.write("#!/bin/sh\n")
+                tmp_file.write(str(entry["entry"]["entry"]))
+                tmp_file.flush()
+
+                try:
+                    process = subprocess.Popen(
+                        args=[self.options.shellcheck, tmp_file.name],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    )
+                except FileNotFoundError:
+                    sys.stderr.write(
+                        f"No shellcheck found at {self.options.shellcheck}\n"
+                    )
+                    sys.exit(os.EX_OSFILE)
+
+                try:
+                    stdout, stderr = process.communicate()
+                except TimeoutExpired as err:
+                    sys.stderr.write(
+                        f"Failed to check entrypoint {entry['id']['id']} on line {entry['entry']['line']}: {err.stderr}"  # noqa: E501
+                    )
+                    sys.exit(os.EX_IOERR)
+                if stderr:
+                    sys.stderr.write(
+                        f"Failed to check entrypoint {entry['id']['id']} on line {entry['entry']['line']}: {stderr.decode('UTF-8')}"  # noqa: E501
+                    )
+                    sys.exit(os.EX_IOERR)
+
+                new_name = f"entry \"{entry['id']['id']}\""
+                output = stdout.decode("utf-8").replace(tmp_file.name, new_name)
+                self._write_output(entry=entry, output=output)
+
+    def check(self) -> None:
+        """Check file for YAML entrypoints and verify them."""
+        self._check_entries()
 
 
 def main() -> None:
     """Program main."""
     checker = Shellcheck()  # type: ignore
-    sys.stdout.write(str(checker.list_entries()))
+    checker.check()
 
 
 if __name__ == "__main__":
-
     main()
