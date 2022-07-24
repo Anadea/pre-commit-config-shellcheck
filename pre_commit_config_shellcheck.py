@@ -5,10 +5,9 @@ import os
 import re
 import sys
 import tempfile
-import subprocess
-from subprocess import TimeoutExpired
-from typing import Any, Dict, List, Union
+import subprocess  # nosec
 from argparse import Namespace, ArgumentParser
+from typing import Any, Dict, List, Tuple, Union
 
 import yaml
 from yaml.scanner import ScannerError
@@ -121,7 +120,9 @@ class Shellcheck:
         """
         try:
             with open(self.options.path) as stream:
-                file_: Dict[str, Any] = yaml.load(stream=stream, Loader=CustomLoader)
+                file_: Dict[str, Any] = yaml.load(  # nosec
+                    stream=stream, Loader=CustomLoader
+                )
         except FileNotFoundError:
             sys.stderr.write(f"No file {self.options.path} found\n")
             sys.exit(os.EX_OSFILE)
@@ -194,7 +195,8 @@ class Shellcheck:
         :param output: base output to edit and process
         :type output: str
         """
-        #
+        # regular expression for finding line number from output text:
+        # returns two groups: "line #" for output replacement and line number itself
         regular = re.findall(r"In entry \".*\" (?P<switch>line (?P<line>\d+))", output)
         for line_number in regular:
             # subtract 2 because of number of lines difference
@@ -208,6 +210,48 @@ class Shellcheck:
             )
         sys.stdout.write(output)
 
+    def _check_entry_file(
+        self,
+        entry: Dict[str, Dict[str, Union[int, str]]],
+        tmp_file,
+    ) -> Tuple[bytes, bytes]:
+        """
+        Run a shellcheck command on temporary file.
+
+        :param entry: entry data to insert into output
+        :type entry: Dict[str, Dict[str, Union[int, str]]]
+        :param tmp_file: created temporary file
+        :type tmp_file: _TemporaryFileWrapper
+        :return: process output
+        :rtype: Tuple[bytes, bytes]
+        """
+        try:
+            process = subprocess.Popen(  # nosec
+                args=[self.options.shellcheck, tmp_file.name],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        except FileNotFoundError:
+            sys.stderr.write(f"No shellcheck found: '{self.options.shellcheck}'\n")
+            sys.exit(os.EX_OSFILE)
+
+        try:
+            stdout, stderr = process.communicate()
+
+        except subprocess.TimeoutExpired as err:
+            sys.stderr.write(
+                f"Failed to check entrypoint {entry['id']['id']} on line {entry['entry']['line']}: {err.stderr}"  # noqa: E501
+            )
+            sys.exit(os.EX_IOERR)
+
+        if stderr:
+            sys.stderr.write(
+                f"Failed to check entrypoint {entry['id']['id']} on line {entry['entry']['line']}: {stderr.decode('UTF-8')}"  # noqa: E501
+            )
+            sys.exit(os.EX_IOERR)
+
+        return stdout, stderr
+
     def _check_entries(self) -> None:
         """Check the created file for possible entrypoints corrections."""
         for entry in self._list_entries():
@@ -216,30 +260,7 @@ class Shellcheck:
                 tmp_file.write(str(entry["entry"]["entry"]))
                 tmp_file.flush()
 
-                try:
-                    process = subprocess.Popen(
-                        args=[self.options.shellcheck, tmp_file.name],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                    )
-                except FileNotFoundError:
-                    sys.stderr.write(
-                        f"No shellcheck found at {self.options.shellcheck}\n"
-                    )
-                    sys.exit(os.EX_OSFILE)
-
-                try:
-                    stdout, stderr = process.communicate()
-                except TimeoutExpired as err:
-                    sys.stderr.write(
-                        f"Failed to check entrypoint {entry['id']['id']} on line {entry['entry']['line']}: {err.stderr}"  # noqa: E501
-                    )
-                    sys.exit(os.EX_IOERR)
-                if stderr:
-                    sys.stderr.write(
-                        f"Failed to check entrypoint {entry['id']['id']} on line {entry['entry']['line']}: {stderr.decode('UTF-8')}"  # noqa: E501
-                    )
-                    sys.exit(os.EX_IOERR)
+                stdout, stderr = self._check_entry_file(entry, tmp_file)
 
                 new_name = f"entry \"{entry['id']['id']}\""
                 output = stdout.decode("utf-8").replace(tmp_file.name, new_name)

@@ -8,7 +8,12 @@ __all__: List[str] = ["parsed_file"]
 
 @pytest.fixture
 def parsed_file() -> Dict[str, Any]:
-    """Create parsed YAML file fixture."""
+    """
+    Create parsed YAML file fixture.
+
+    :return: example of parsed file
+    :rtype: Dict[str, Any]
+    """
     return {  # noqa: ECE001
         "repos": [
             {

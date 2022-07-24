@@ -169,6 +169,8 @@ def test__find_entries__string(
 
     :param mocker: mock
     :type mocker: MockerFixture
+    :param capsys: std output fixture
+    :type capsys: CaptureFixture
     """
     mocker.patch(
         "sys.argv",
@@ -343,25 +345,71 @@ For more information:
     assert captured.out == expected
 
 
-def test__check_entries__timeout(mocker: MockerFixture) -> None:
+def test__check_entries__stderr(
+    mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
+) -> None:
     """
     _check_entries method must return None.
 
     :param mocker: mock
     :type mocker: MockerFixture
+    :param capsys: std output fixture
+    :type capsys: CaptureFixture
     """
     mocker.patch(
         "sys.argv",
         [
             "pre_commit_config_shellcheck.py",
-            "tests/fixtures/.pre-commit-config--empty.yaml",
+            "tests/fixtures/.pre-commit-config.yaml",
         ],
     )
-    mocker.patch("subprocess.Popen.communicate", side_effect=TimeoutExpired)
+    mocker.patch(
+        "subprocess.Popen.communicate", return_value=(b"", b"Some text returned")
+    )
 
     checker = Shellcheck()  # type: ignore
     with pytest.raises(SystemExit):
         checker._check_entries()
+
+    captured = capsys.readouterr()
+    assert (
+        captured.err
+        == "Failed to check entrypoint seed-isort-config on line 9: Some text returned"  # noqa: W503, E501
+    )
+
+
+def test__check_entries__timeout(
+    mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
+) -> None:
+    """
+    _check_entries method must return None.
+
+    :param mocker: mock
+    :type mocker: MockerFixture
+    :param capsys: std output fixture
+    :type capsys: CaptureFixture
+    """
+    mocker.patch(
+        "sys.argv",
+        [
+            "pre_commit_config_shellcheck.py",
+            "tests/fixtures/.pre-commit-config.yaml",
+        ],
+    )
+    mocker.patch(
+        "subprocess.Popen.communicate",
+        side_effect=TimeoutExpired(cmd="", timeout=0, stderr="Failure"),
+    )
+
+    checker = Shellcheck()  # type: ignore
+    with pytest.raises(SystemExit):
+        checker._check_entries()
+
+    captured = capsys.readouterr()
+    assert (
+        captured.err
+        == "Failed to check entrypoint seed-isort-config on line 9: Failure"  # noqa: W503, E501
+    )
 
 
 def test__check_entries__wrong_shellcheck(
@@ -391,5 +439,5 @@ def test__check_entries__wrong_shellcheck(
         checker._check_entries()
 
     captured = capsys.readouterr()
-    expected = "No shellcheck found at /test/shellcheck\n"
+    expected = "No shellcheck found: '/test/shellcheck'\n"
     assert captured.err == expected

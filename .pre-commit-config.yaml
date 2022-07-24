@@ -32,6 +32,26 @@ repos:
       language: "system"
       entry: "flake8"
       types: ["python"]
+    - id: "bandit"
+      name: "bandit"
+      stages: [ "commit" ]
+      language: "system"
+      entry: "bandit -r . --ini=setup.cfg"
+      types: ["python"]
+      pass_filenames: false
+    - id: "dodgy"
+      name: "dodgy"
+      stages: [ "commit" ]
+      language: "system"
+      entry: "dodgy -i node_modules"
+      types: [ "python" ]
+      pass_filenames: false
+    - id: "darglint"
+      name: "darglint"
+      stages: [ "commit" ]
+      language: "system"
+      entry: "darglint"
+      types: [ "python" ]
     - id: "mypy"
       name: "mypy"
       stages: ["commit"]
