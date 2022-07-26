@@ -1,0 +1,3 @@
+include pre_commit_config_shellcheck.py
+recursive-exclude tests *.py
+recursive-exclude tests *.yaml
