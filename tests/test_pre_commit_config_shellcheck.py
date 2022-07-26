@@ -5,13 +5,31 @@ from subprocess import TimeoutExpired
 import pytest
 from pytest_mock import MockerFixture
 from _pytest.capture import CaptureFixture
-from pre_commit_config_shellcheck import Shellcheck
+from pre_commit_config_shellcheck import PreCommitConfigShellcheck
 
 
-__all__: List[str] = []
+__all__: List[str] = [
+    "test_pre_commit_config_shellcheck___list_entries",
+    "test_pre_commit_config_shellcheck___list_entries__bad_format",
+    "test_pre_commit_config_shellcheck___write_output",
+    "test_pre_commit_config_shellcheck___check_entries__wrong_shellcheck",
+    "test_pre_commit_config_shellcheck___list_entries__empty",
+    "test_pre_commit_config_shellcheck___check_entries__stderr",
+    "test_pre_commit_config_shellcheck___check_entries__timeout",
+    "test_pre_commit_config_shellcheck___find_entries__empty",
+    "test_pre_commit_config_shellcheck___find_entries__string",
+    "test_pre_commit_config_shellcheck___parse_file",
+    "test_pre_commit_config_shellcheck___parse_file__incorrect_path_option",
+    "test_pre_commit_config_shellcheck___parse_file__empty",
+    "test_pre_commit_config_shellcheck___parse_file__incorrect_file_type",
+    "test_pre_commit_config_shellcheck___get_options__missing_path_option",
+    "test_pre_commit_config_shellcheck___find_entries",
+    "test_pre_commit_config_shellcheck___check_entries",
+    "test_pre_commit_config_shellcheck___get_options",
+]
 
 
-def test__get_options(mocker: MockerFixture) -> None:
+def test_pre_commit_config_shellcheck___get_options(mocker: MockerFixture) -> None:
     """
     _get_options method must return argparse namespace.
 
@@ -22,12 +40,14 @@ def test__get_options(mocker: MockerFixture) -> None:
         "sys.argv",
         ["pre_commit_config_shellcheck.py", "tests/fixtures/.pre-commit-config.yaml"],
     )
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert isinstance(checker.options, Namespace)
 
 
-def test__get_options__missing_path_option(mocker: MockerFixture) -> None:
+def test_pre_commit_config_shellcheck___get_options__missing_path_option(
+    mocker: MockerFixture,
+) -> None:
     """
     _get_options method must return default path if not provided.
 
@@ -36,12 +56,14 @@ def test__get_options__missing_path_option(mocker: MockerFixture) -> None:
     """
     mocker.patch("sys.argv", ["pre_commit_config_shellcheck.py"])
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert checker.options.path == ".pre-commit-config.yaml"
 
 
-def test__parse_file(mocker: MockerFixture, parsed_file: Dict[str, Any]) -> None:
+def test_pre_commit_config_shellcheck___parse_file(
+    mocker: MockerFixture, parsed_file: Dict[str, Any]
+) -> None:
     """
     _get_entries method must return list of entries.
 
@@ -55,12 +77,12 @@ def test__parse_file(mocker: MockerFixture, parsed_file: Dict[str, Any]) -> None
         ["pre_commit_config_shellcheck.py", "tests/fixtures/.pre-commit-config.yaml"],
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert checker._parse_file() == parsed_file
 
 
-def test__parse_file__incorrect_path_option(
+def test_pre_commit_config_shellcheck___parse_file__incorrect_path_option(
     mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
 ) -> None:
     """
@@ -73,7 +95,7 @@ def test__parse_file__incorrect_path_option(
     """
     mocker.patch("sys.argv", ["pre_commit_config_shellcheck.py", "test.yaml"])
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
     with pytest.raises(SystemExit):
         checker._parse_file()
 
@@ -81,7 +103,9 @@ def test__parse_file__incorrect_path_option(
     assert captured.err == "No file test.yaml found\n"
 
 
-def test__parse_file__empty(mocker: MockerFixture) -> None:
+def test_pre_commit_config_shellcheck___parse_file__empty(
+    mocker: MockerFixture,
+) -> None:
     """
     _get_entries method must return None.
 
@@ -96,12 +120,12 @@ def test__parse_file__empty(mocker: MockerFixture) -> None:
         ],
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert checker._parse_file() is None
 
 
-def test__parse_file__incorrect_file_type(
+def test_pre_commit_config_shellcheck___parse_file__incorrect_file_type(
     mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
 ) -> None:
     """
@@ -114,7 +138,7 @@ def test__parse_file__incorrect_file_type(
     """
     mocker.patch("sys.argv", ["pre_commit_config_shellcheck.py", "tests/__init__.py"])
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
     with pytest.raises(SystemExit):
         checker._parse_file()
 
@@ -122,7 +146,9 @@ def test__parse_file__incorrect_file_type(
     assert captured.err == "tests/__init__.py is not a YAML file\n"
 
 
-def test__find_entries(mocker: MockerFixture, parsed_file: Dict[str, Any]) -> None:
+def test_pre_commit_config_shellcheck___find_entries(
+    mocker: MockerFixture, parsed_file: Dict[str, Any]
+) -> None:
     """
     _find_entries method must return list of entries.
 
@@ -133,7 +159,7 @@ def test__find_entries(mocker: MockerFixture, parsed_file: Dict[str, Any]) -> No
     """
     mocker.patch("sys.argv", ["pre_commit_config_shellcheck.py"])
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert checker._find_entries(parsed_file) == [
         {
@@ -147,7 +173,9 @@ def test__find_entries(mocker: MockerFixture, parsed_file: Dict[str, Any]) -> No
     ]
 
 
-def test__find_entries__empty(mocker: MockerFixture) -> None:
+def test_pre_commit_config_shellcheck___find_entries__empty(
+    mocker: MockerFixture,
+) -> None:
     """
     _find_entries method must return empty list.
 
@@ -156,12 +184,12 @@ def test__find_entries__empty(mocker: MockerFixture) -> None:
     """
     mocker.patch("sys.argv", ["pre_commit_config_shellcheck.py"])
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert checker._find_entries({}) == []
 
 
-def test__find_entries__string(
+def test_pre_commit_config_shellcheck___find_entries__string(
     mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
 ) -> None:
     """
@@ -180,7 +208,7 @@ def test__find_entries__string(
         ],
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     with pytest.raises(SystemExit):
         checker._find_entries(checker._parse_file())
@@ -192,7 +220,7 @@ def test__find_entries__string(
     )
 
 
-def test__list_entries(mocker: MockerFixture) -> None:
+def test_pre_commit_config_shellcheck___list_entries(mocker: MockerFixture) -> None:
     """
     _list_entries method must return list of entries.
 
@@ -204,7 +232,7 @@ def test__list_entries(mocker: MockerFixture) -> None:
         ["pre_commit_config_shellcheck.py", "tests/fixtures/.pre-commit-config.yaml"],
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert checker._list_entries() == [
         {
@@ -218,7 +246,9 @@ def test__list_entries(mocker: MockerFixture) -> None:
     ]
 
 
-def test__list_entries__bad_format(mocker: MockerFixture) -> None:
+def test_pre_commit_config_shellcheck___list_entries__bad_format(
+    mocker: MockerFixture,
+) -> None:
     """
     _list_entries method must return None.
 
@@ -233,12 +263,14 @@ def test__list_entries__bad_format(mocker: MockerFixture) -> None:
         ],
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert checker._list_entries() == []
 
 
-def test__list_entries__empty(mocker: MockerFixture) -> None:
+def test_pre_commit_config_shellcheck___list_entries__empty(
+    mocker: MockerFixture,
+) -> None:
     """
     _list_entries method must return None.
 
@@ -253,12 +285,12 @@ def test__list_entries__empty(mocker: MockerFixture) -> None:
         ],
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     assert checker._list_entries() == []
 
 
-def test__write_output(
+def test_pre_commit_config_shellcheck___write_output(
     mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
 ) -> None:
     """
@@ -292,7 +324,7 @@ For more information:
   https://www.shellcheck.net/wiki/SC2086 -- Double quote to prevent globbing ...
 """
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
     checker._write_output(entry=entry, output=output)  # type: ignore
 
     captured = capsys.readouterr()
@@ -309,7 +341,7 @@ For more information:
     assert captured.out == expected
 
 
-def test__check_entries(
+def test_pre_commit_config_shellcheck___check_entries(
     mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
 ) -> None:
     """
@@ -328,7 +360,7 @@ def test__check_entries(
         ],
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
     checker._check_entries()
 
     captured = capsys.readouterr()
@@ -345,7 +377,7 @@ For more information:
     assert captured.out == expected
 
 
-def test__check_entries__stderr(
+def test_pre_commit_config_shellcheck___check_entries__stderr(
     mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
 ) -> None:
     """
@@ -367,7 +399,7 @@ def test__check_entries__stderr(
         "subprocess.Popen.communicate", return_value=(b"", b"Some text returned")
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
     with pytest.raises(SystemExit):
         checker._check_entries()
 
@@ -378,7 +410,7 @@ def test__check_entries__stderr(
     )
 
 
-def test__check_entries__timeout(
+def test_pre_commit_config_shellcheck___check_entries__timeout(
     mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
 ) -> None:
     """
@@ -401,7 +433,7 @@ def test__check_entries__timeout(
         side_effect=TimeoutExpired(cmd="", timeout=0, stderr="Failure"),
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
     with pytest.raises(SystemExit):
         checker._check_entries()
 
@@ -412,7 +444,7 @@ def test__check_entries__timeout(
     )
 
 
-def test__check_entries__wrong_shellcheck(
+def test_pre_commit_config_shellcheck___check_entries__wrong_shellcheck(
     mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
 ) -> None:
     """
@@ -433,7 +465,7 @@ def test__check_entries__wrong_shellcheck(
         ],
     )
 
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
 
     with pytest.raises(SystemExit):
         checker._check_entries()

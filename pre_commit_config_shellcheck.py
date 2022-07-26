@@ -15,10 +15,10 @@ from yaml.resolver import BaseResolver
 from yaml import Node, Loader, ScalarNode
 
 
-__all__: List[str] = ["main", "Shellcheck"]
+__all__: List[str] = ["main", "PreCommitConfigShellcheck"]
 
 
-class CustomLoader(Loader):
+class CustomYamlLoader(Loader):
     """Custom class for YAML loader."""
 
     def compose_node(
@@ -67,8 +67,8 @@ class CustomLoader(Loader):
         return super().construct_mapping(node=node, deep=deep)  # type: ignore
 
 
-class Shellcheck:
-    """YAML shellchecker for entry points."""
+class PreCommitConfigShellcheck:
+    """Tool for shellchecking pre-commit config files."""
 
     def __init__(self):
         """Get command line args."""
@@ -121,7 +121,7 @@ class Shellcheck:
         try:
             with open(self.options.path) as stream:
                 file_: Dict[str, Any] = yaml.load(  # nosec
-                    stream=stream, Loader=CustomLoader
+                    stream=stream, Loader=CustomYamlLoader
                 )
         except FileNotFoundError:
             sys.stderr.write(f"No file {self.options.path} found\n")
@@ -273,7 +273,7 @@ class Shellcheck:
 
 def main() -> None:
     """Program main."""
-    checker = Shellcheck()  # type: ignore
+    checker = PreCommitConfigShellcheck()  # type: ignore
     checker.check()
 
 
