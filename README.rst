@@ -5,6 +5,8 @@ pre-commit-config-shellcheck documentation
 
 *pre-commit-config-shellcheck is a tool for checking entry points in pre-commit config with ShellCheck.*
 
+.. contents::
+
 Installation
 ------------
 In order to use the tool you should first clone it from the source:
