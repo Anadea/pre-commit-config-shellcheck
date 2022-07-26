@@ -90,7 +90,7 @@ repos:
       stages: [commit]
       language: system
       pass_filenames: false
-      entry: bash -c 'make build -B && check-wheel-contents dist'
+      entry: bash -c 'make build -B && check-wheel-contents dist -c setup.cfg'
       types: [python]
     - id: "dotenv-linter"
       name: "dotenv-linter"

@@ -367,13 +367,13 @@ def test_pre_commit_config_shellcheck___check_entries(
     expected = """
 In entry "removestar" on line 17:
 removestar -i ${NAME}
-              ^-----^ SC2086: Double quote to prevent globbing and word splitting.
+              ^-----^ SC2086 (info): Double quote to prevent globbing and word splitting.
 
 Did you mean: \nremovestar -i "${NAME}"
 
 For more information:
   https://www.shellcheck.net/wiki/SC2086 -- Double quote to prevent globbing ...
-"""
+"""  # noqa: E501
     assert captured.out == expected
 
 
