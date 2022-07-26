@@ -1,0 +1,11 @@
+nosec
+lst
+shellcheck
+dst
+metavar
+osfile
+ioerror
+tmp
+popen
+capsys
+readouterr
