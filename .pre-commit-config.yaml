@@ -5,7 +5,7 @@ repos:
       name: "removestar"
       stages: ["commit"]
       language: "system"
-      entry: "removestar -i ${NAME}"
+      entry: "removestar -i \"${NAME}\""
       types: ["python"]
     - id: "isort"
       name: "isort"
@@ -32,6 +32,18 @@ repos:
       language: "system"
       entry: "flake8"
       types: ["python"]
+    - id: "interrogate"
+      name: "interrogate"
+      stages: ["commit"]
+      language: "system"
+      entry: "interrogate . -I -M -e .direnv"
+      types: ["python"]
+    - id: "pylint"
+      name: "pylint"
+      stages: ["commit"]
+      language: "system"
+      entry: "pylint \"${NAME}\" tests"
+      types: ["python"]
     - id: "bandit"
       name: "bandit"
       stages: [ "commit" ]
@@ -56,7 +68,7 @@ repos:
       name: "mypy"
       stages: ["commit"]
       language: "system"
-      entry: "mypy"
+      entry: bash -c 'PYTHONPATH="\"${PYTHONPATH}\":\"${PWD}\"" mypy'
       types: ["python"]
       pass_filenames: false
     - id: "dotenv-linter"
@@ -66,7 +78,7 @@ repos:
       stages: ["commit"]
       types: ["text"]
       files: '\.env*'
-      exclude: ".envrc|.env.j2"
+      exclude: ".envrc"
     - id: "rstcheck"
       name: "rstcheck"
       entry: "rstcheck"

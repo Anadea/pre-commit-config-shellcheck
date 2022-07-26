@@ -1,8 +1,3 @@
-- Add multiline entrypoints support
-- Add tests for checking
-- Add public method for main function call
-- Process more subprocess errors
-
 - Work as pre-commit hook
 - Work as Github action
-- Add README file
+- Update README file

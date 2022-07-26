@@ -36,17 +36,11 @@ dist/*
 tmp/*
 log/*
 parts
-media/*
 *env*/
 .direnv
-static/*
 *.pid
 .credentials
 .env
 .coverage
 Pipfile.lock
 htmlcov
-celerybeat-schedule
-data/*
-node_modules/*
-package-lock.json

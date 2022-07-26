@@ -1,7 +1,7 @@
 pre-commit-config-shellcheck documentation
 ==========================================
 
-*pre-commit-config-shellcheck is a tool for checking entry points in pre-commit config with shellcheck.*
+*pre-commit-config-shellcheck is a tool for checking entry points in pre-commit config with ShellCheck.*
 
 
 Installation
@@ -11,7 +11,7 @@ In order to use the tool you should first clone it from the source:
 
 .. code-block:: bash
 
-    $ git clone https://newgit.anadea.co/anadea/randd/pre-commit-config-shellcheck.git
+    $ git clone https://github.com/anadea/pre-commit-config-shellcheck.git
 
 Then you should install project dependencies with
 
@@ -101,7 +101,7 @@ pre-commit-config-shellcheck uses the MIT license. Please check the MIT-LICENSE 
 Contacts
 --------
 
-**Project Website**: https://newgit.anadea.co/anadea/randd/pre-commit-config-shellcheck
+**Project Website**: https://github.com/anadea/pre-commit-config-shellcheck/
 
 **Author**: Anadea
 

@@ -53,7 +53,7 @@ class CustomYamlLoader(Loader):
         """
         node_pair_lst_for_appending = []
 
-        for node_key, _node_value in node.value:
+        for node_key, _ in node.value:
             shadow_key_node = ScalarNode(
                 tag=BaseResolver.DEFAULT_SCALAR_TAG, value="__line__" + node_key.value
             )
@@ -83,7 +83,7 @@ class PreCommitConfigShellcheck:
         :rtype: Namespace
         """
         parser: ArgumentParser = ArgumentParser(
-            description="Tool for checking shell code in YAML entry points"
+            description="Tool for checking shell code in pre-commit config entry points"
         )
 
         parser.add_argument(
@@ -102,7 +102,7 @@ class PreCommitConfigShellcheck:
             type=str,
             default="shellcheck",
             metavar="SHELLCHECK",
-            help="shellcheck path",
+            help="ShellCheck path",
         )
 
         options: Namespace = parser.parse_args()
@@ -115,12 +115,12 @@ class PreCommitConfigShellcheck:
         """
         Parse requested file.
 
-        :return: parsed YAML file
+        :return: parsed config
         :rtype: Dict[str, List[Dict[str, Any]]]
         """
         try:
             with open(self.options.path) as stream:
-                file_: Dict[str, Any] = yaml.load(  # nosec
+                file_: Dict[str, Any] = yaml.load(  # nosec  # noqa: DUO109
                     stream=stream, Loader=CustomYamlLoader
                 )
         except FileNotFoundError:
@@ -133,19 +133,19 @@ class PreCommitConfigShellcheck:
         return file_
 
     def _find_entries(  # noqa: CCR001
-        self, yaml_file: Dict[str, Any]
+        self, data: Dict[str, Any]
     ) -> List[Dict[str, Dict[str, Union[int, str]]]]:
         """
-        Find all entries in provided YAML file.
+        Find all entries in provided config.
 
-        :param yaml_file: constructed mapping of read YAML file
-        :type yaml_file: Dict[str, Any]
+        :param data: constructed mapping of file
+        :type data: Dict[str, Any]
         :return: list of ids and entries with number of lines they are attached to
         :rtype: List[Dict[str, Dict[str, Union[int, str]]]]
         """
         result: List[Dict[str, Dict[str, Union[int, str]]]] = []
         try:
-            for repository in yaml_file.get("repos", []):
+            for repository in data.get("repos", []):
                 for hook in repository.get("hooks", []):
                     if "entry" in hook:
                         result.append(
@@ -213,21 +213,21 @@ class PreCommitConfigShellcheck:
     def _check_entry_file(
         self,
         entry: Dict[str, Dict[str, Union[int, str]]],
-        tmp_file,
+        tmp,
     ) -> Tuple[bytes, bytes]:
         """
         Run a shellcheck command on temporary file.
 
         :param entry: entry data to insert into output
         :type entry: Dict[str, Dict[str, Union[int, str]]]
-        :param tmp_file: created temporary file
-        :type tmp_file: _TemporaryFileWrapper
+        :param tmp: created temporary file
+        :type tmp: _TemporaryFileWrapper
         :return: process output
         :rtype: Tuple[bytes, bytes]
         """
         try:
             process = subprocess.Popen(  # nosec
-                args=[self.options.shellcheck, tmp_file.name],
+                args=[self.options.shellcheck, tmp.name],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
@@ -253,21 +253,21 @@ class PreCommitConfigShellcheck:
         return stdout, stderr
 
     def _check_entries(self) -> None:
-        """Check the created file for possible entrypoints corrections."""
+        """Check the created file for possible entrypoints issues."""
         for entry in self._list_entries():
-            with tempfile.NamedTemporaryFile("w+") as tmp_file:
-                tmp_file.write("#!/bin/sh\n")
-                tmp_file.write(str(entry["entry"]["entry"]))
-                tmp_file.flush()
+            with tempfile.NamedTemporaryFile("w+") as tmp:
+                tmp.write("#!/bin/sh\n")
+                tmp.write(str(entry["entry"]["entry"]))
+                tmp.flush()
 
-                stdout, stderr = self._check_entry_file(entry, tmp_file)
+                stdout, _ = self._check_entry_file(entry, tmp)
+                name = f"entry \"{entry['id']['id']}\""
+                output = stdout.decode("utf-8").replace(tmp.name, name)
 
-                new_name = f"entry \"{entry['id']['id']}\""
-                output = stdout.decode("utf-8").replace(tmp_file.name, new_name)
                 self._write_output(entry=entry, output=output)
 
     def check(self) -> None:
-        """Check file for YAML entrypoints and verify them."""
+        """Check file for entrypoints and verify them."""
         self._check_entries()
 
 
