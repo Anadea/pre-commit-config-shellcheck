@@ -1,12 +1,12 @@
 pre-commit-config-shellcheck documentation
 ==========================================
 
-*pre-commit-config-shellcheck is a tool for checking entry points in pre-commit config with ShellCheck.*
+|GitHub|_ |Coveralls|_ |pypi-license|_ |pypi-version|_ |pypi-python-version|_ |pypi-format|_ |pypi-wheel|_ |pypi-status|_
 
+*pre-commit-config-shellcheck is a tool for checking entry points in pre-commit config with ShellCheck.*
 
 Installation
 ------------
-
 In order to use the tool you should first clone it from the source:
 
 .. code-block:: bash
@@ -27,10 +27,8 @@ or
 
 The installation is done and as simple as that.
 
-
 Usage
 -----
-
 To run the program you should start it from terminal and provide with a config file to check:
 
 .. code-block:: bash
@@ -45,11 +43,10 @@ You could change a default shellcheck call with directory access with the ``-s``
 
 The output from tool usage is sent to the stdout or stderr depending on the operation result.
 
-
 Contributing
 ------------
 
-- Fork the repository
+- `Fork it <https://github.com/Anadea/pre-commit-config-shellcheck/>`_
 - Install `GNU Make <https://www.gnu.org/software/make/>`_
 - Install and configure `pyenv <https://github.com/pyenv/pyenv/>`_ and `pyenv-virtualenv plugin <https://github.com/pyenv/pyenv-virtualenv/>`_
 - Install and configure `direnv <https://github.com/direnv/direnv/>`_
@@ -89,20 +86,44 @@ Contributing
 
     git push origin my-new-fix-or-feature
 
-- Create a new Pull Request
+- `Create a new Pull Request <https://github.com/Anadea/pre-commit-config-shellcheck/compare/>`_
 
 
 Licensing
 ---------
-
 pre-commit-config-shellcheck uses the MIT license. Please check the MIT-LICENSE file for more details.
 
 
 Contacts
 --------
-
 **Project Website**: https://github.com/anadea/pre-commit-config-shellcheck/
 
 **Author**: Anadea
 
 For contributors list see CONTRIBUTORS file.
+
+
+.. |GitHub| image:: https://github.com/Anadea/pre-commit-config-shellcheck/workflows/build/badge.svg
+    :alt: GitHub
+.. |Coveralls| image:: https://coveralls.io/repos/github/Anadea/pre-commit-config-shellcheck/badge.svg?branch=master
+    :alt: Coveralls
+.. |pypi-license| image:: https://img.shields.io/pypi/l/pre-commit-config-shellcheck
+    :alt: License
+.. |pypi-version| image:: https://img.shields.io/pypi/v/pre-commit-config-shellcheck
+    :alt: Version
+.. |pypi-python-version| image:: https://img.shields.io/pypi/pyversions/pre-commit-config-shellcheck
+    :alt: Supported Python version
+.. |pypi-format| image:: https://img.shields.io/pypi/format/pre-commit-config-shellcheck
+    :alt: Package format
+.. |pypi-wheel| image:: https://img.shields.io/pypi/wheel/pre-commit-config-shellcheck
+    :alt: Python wheel support
+.. |pypi-status| image:: https://img.shields.io/pypi/status/pre-commit-config-shellcheck
+    :alt: Package status
+.. _GitHub: https://github.com/Anadea/pre-commit-config-shellcheck/actions/
+.. _Coveralls: https://coveralls.io/Anadea/pre-commit-config-shellcheck?branch=master
+.. _pypi-license: https://pypi.org/project/pre-commit-config-shellcheck/
+.. _pypi-version: https://pypi.org/project/pre-commit-config-shellcheck/
+.. _pypi-python-version: https://pypi.org/project/pre-commit-config-shellcheck/
+.. _pypi-format: https://pypi.org/project/pre-commit-config-shellcheck/
+.. _pypi-wheel: https://pypi.org/project/pre-commit-config-shellcheck/
+.. _pypi-status: https://pypi.org/project/pre-commit-config-shellcheck/
