@@ -34,11 +34,11 @@ check-build:
 
 
 check-upload:
-	twine upload --skip-existing -s --repository-url $(TEST_PYPI_URL) -u __token__ -p $${TEST_TWINE_PASSWORD} dist/*;\
+	twine upload --skip-existing --repository-url $(TEST_PYPI_URL) -u __token__ -p $${TEST_TWINE_PASSWORD} dist/*;\
 
 
 upload:
-	twine upload --skip-existing -s dist/*;\
+	twine upload --skip-existing dist/*;\
 
 
 coveralls:
