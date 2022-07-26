@@ -120,7 +120,7 @@ For contributors list see CONTRIBUTORS file.
 .. |pypi-status| image:: https://img.shields.io/pypi/status/pre-commit-config-shellcheck
     :alt: Package status
 .. _GitHub: https://github.com/Anadea/pre-commit-config-shellcheck/actions/
-.. _Coveralls: https://coveralls.io/Anadea/pre-commit-config-shellcheck?branch=master
+.. _Coveralls: https://coveralls.io/github/Anadea/pre-commit-config-shellcheck?branch=master
 .. _pypi-license: https://pypi.org/project/pre-commit-config-shellcheck/
 .. _pypi-version: https://pypi.org/project/pre-commit-config-shellcheck/
 .. _pypi-python-version: https://pypi.org/project/pre-commit-config-shellcheck/
