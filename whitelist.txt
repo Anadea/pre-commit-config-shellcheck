@@ -1,11 +1,12 @@
 nosec
 lst
 shellcheck
-dst
+dest
 metavar
 osfile
-ioerror
 tmp
 popen
 capsys
 readouterr
+ioerr
+cmd
