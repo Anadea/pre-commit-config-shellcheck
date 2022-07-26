@@ -15,15 +15,15 @@ jobs:
     steps:
       - name: "Git clone"
         id: "git-clone"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3.0.2"
       - name: "Set up Python ${{ env.DEFAULT_PYTHON_VERSION }}"
         id: "set-up-python"
-        uses: "actions/setup-python@v2"
+        uses: "actions/setup-python@v4.1.0"
         with:
           python-version: "${{ env.DEFAULT_PYTHON_VERSION }}"
       - name: "Pip cache"
         id: "pip-cache"
-        uses: "actions/cache@v2"
+        uses: "actions/cache@v3.0.5"
         with:
           path: "~/.cache/pip"
           key: "${{ runner.os }}-pip-${{ matrix.toxenv }}-${{ hashFiles('setup.cfg') }}"
@@ -32,7 +32,7 @@ jobs:
             "${{ runner.os }}-pip-"
       - name: "Pre-commit cache"
         id: "pre-commit-cache"
-        uses: "actions/cache@v2"
+        uses: "actions/cache@v3.0.5"
         with:
           path: "~/.cache/pre-commit"
           key: "${{ runner.os }}-pre-commit-${{ matrix.toxenv }}-${{ hashFiles('.pre-commit-config.yaml') }}"
