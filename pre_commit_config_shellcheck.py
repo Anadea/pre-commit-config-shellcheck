@@ -16,6 +16,11 @@ from yaml import Node, Loader, ScalarNode
 __all__: List[str] = ["main", "PreCommitConfigShellcheck"]
 
 
+# metadata
+VERSION = (0, 2, 0)
+__version__ = ".".join(map(str, VERSION))
+
+
 class CustomYamlLoader(Loader):
     """Custom class for YAML loader."""
 
@@ -105,6 +110,12 @@ class PreCommitConfigShellcheck:
             default="shellcheck",
             metavar="SHELLCHECK",
             help="ShellCheck path",
+        )
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version=f"{__version__}",
         )
 
         options: Namespace = parser.parse_args()
