@@ -1,2 +1,3 @@
 - Work as pre-commit hook
 - Work as Github action
+- Add RPM .spec file

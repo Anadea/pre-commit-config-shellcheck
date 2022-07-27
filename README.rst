@@ -35,13 +35,13 @@ To run the program you should start it from terminal and provide with a config f
 
 .. code-block:: bash
 
-    $ python pre_commit_config_shellcheck.py .pre-commit-config.yaml
+    $ pre_commit_config_shellcheck.py .pre-commit-config.yaml
 
 You could change a default shellcheck call with directory access with the ``-s`` or ``--shellcheck`` argument:
 
 .. code-block:: bash
 
-    $ python pre_commit_config_shellcheck.py .pre-commit-config.yaml -s /bin/shellcheck
+    $ pre_commit_config_shellcheck.py .pre-commit-config.yaml -s /bin/shellcheck
 
 The output from tool usage is sent to the stdout or stderr depending on the operation result.
 
