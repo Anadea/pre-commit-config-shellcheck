@@ -90,7 +90,7 @@ class PreCommitConfigShellcheck:
         :rtype: Namespace
         """
         parser: ArgumentParser = ArgumentParser(
-            description="Tool for checking shell code in pre-commit config entry points"
+            description="Tool for checking entry points in the pre-commit config with ShellCheck."  # noqa: E501
         )
 
         parser.add_argument(

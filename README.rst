@@ -3,7 +3,7 @@ pre-commit-config-shellcheck documentation
 
 |GitHub|_ |Coveralls|_ |pypi-license|_ |pypi-version|_ |pypi-python-version|_ |pypi-format|_ |pypi-wheel|_ |pypi-status|_
 
-*pre-commit-config-shellcheck is a tool for checking entry points in pre-commit config with ShellCheck.*
+*pre-commit-config-shellcheck is a tool for checking entry points in the pre-commit config with ShellCheck.*
 
 .. contents::
 
@@ -31,13 +31,13 @@ The installation is done and as simple as that.
 
 Usage
 -----
-To run the program you should start it from terminal and provide with a config file to check:
+To run the program you should start it from the terminal and provide a config file to check:
 
 .. code-block:: bash
 
     $ pre_commit_config_shellcheck.py .pre-commit-config.yaml
 
-You could change a default shellcheck call with directory access with the ``-s`` or ``--shellcheck`` argument:
+You could change a default ShellCheck call with directory access with the ``-s`` or ``--shellcheck`` argument:
 
 .. code-block:: bash
 
@@ -45,13 +45,17 @@ You could change a default shellcheck call with directory access with the ``-s``
 
 The output from tool usage is sent to the stdout or stderr depending on the operation result.
 
-Usage as pre-commit hook
-------------------------
-.. TODO: add documentation section!!1
-.. - repo: "https://github.com/Anadea/pre-commit-config-shellcheck"
-..   rev: "v0.2.0"
-..   hooks:
-..     - id: "pre-commit-config-shellcheck"
+Usage as a pre-commit hook
+--------------------------
+Also, it can be used as a `pre-commit <https://pre-commit.com/>`_ hook out of the box. Just add it to yours ``.pre-commit-config.yaml``:
+
+.. code-block:: yaml
+
+  - repo: "https://github.com/Anadea/pre-commit-config-shellcheck"
+    rev: "v0.2.0"
+      hooks:
+        - id: "pre-commit-config-shellcheck"
+
 
 Contributing
 ------------
@@ -60,7 +64,7 @@ Contributing
 - Install `GNU Make <https://www.gnu.org/software/make/>`_
 - Install and configure `pyenv <https://github.com/pyenv/pyenv/>`_ and `pyenv-virtualenv plugin <https://github.com/pyenv/pyenv-virtualenv/>`_
 - Install and configure `direnv <https://github.com/direnv/direnv/>`_
-- Create environment config from example
+- Create environment config from the example
 
 .. code-block:: bash
 
