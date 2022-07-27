@@ -11,6 +11,8 @@ from pre_commit_config_shellcheck import PreCommitConfigShellcheck
 __all__: List[str] = [
     "test_pre_commit_config_shellcheck___list_entries",
     "test_pre_commit_config_shellcheck___list_entries__bad_format",
+    "test_pre_commit_config_shellcheck___create_output",
+    "test_pre_commit_config_shellcheck___write_output__empty",
     "test_pre_commit_config_shellcheck___write_output",
     "test_pre_commit_config_shellcheck___check_entries__wrong_shellcheck",
     "test_pre_commit_config_shellcheck___list_entries__empty",
@@ -290,16 +292,12 @@ def test_pre_commit_config_shellcheck___list_entries__empty(
     assert checker._list_entries() == []
 
 
-def test_pre_commit_config_shellcheck___write_output(
-    mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
-) -> None:
+def test_pre_commit_config_shellcheck___create_output(mocker: MockerFixture) -> None:
     """
-    _check_entries method must write in stdout warning in entrypoint.
+    _create_output method must return process output and desired exit code.
 
     :param mocker: mock
     :type mocker: MockerFixture
-    :param capsys: std output fixture
-    :type capsys: CaptureFixture
     """
     mocker.patch(
         "sys.argv",
@@ -325,10 +323,43 @@ For more information:
 """
 
     checker = PreCommitConfigShellcheck()  # type: ignore
-    checker._write_output(entry=entry, output=output)  # type: ignore
+    expected = (
+        """
+In entry "removestar" on line 17:
+removestar -i ${NAME}
+              ^-----^ SC2086: Double quote to prevent globbing and word splitting.
 
-    captured = capsys.readouterr()
-    expected = """
+Did you mean: \nremovestar -i "${NAME}"
+
+For more information:
+  https://www.shellcheck.net/wiki/SC2086 -- Double quote to prevent globbing ...
+""",
+        checker.EXIT_CODE_ERROR,
+    )
+
+    assert checker._create_output(entry=entry, output=output) == expected  # type: ignore  # noqa: E501
+
+
+def test_pre_commit_config_shellcheck___write_output(
+    mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
+) -> None:
+    """
+    _write_output method must write in stdout all warnings in entrypoints and exit with exit code.
+
+    :param mocker: mock
+    :type mocker: MockerFixture
+    :param capsys: std output fixture
+    :type capsys: CaptureFixture
+    """  # noqa: E501
+    mocker.patch(
+        "sys.argv",
+        [
+            "pre_commit_config_shellcheck.py",
+            "tests/fixtures/.pre-commit-config.yaml",
+        ],
+    )
+    checker = PreCommitConfigShellcheck()  # type: ignore
+    output = """
 In entry "removestar" on line 17:
 removestar -i ${NAME}
               ^-----^ SC2086: Double quote to prevent globbing and word splitting.
@@ -338,7 +369,40 @@ Did you mean: \nremovestar -i "${NAME}"
 For more information:
   https://www.shellcheck.net/wiki/SC2086 -- Double quote to prevent globbing ...
 """
-    assert captured.out == expected
+    code = checker.EXIT_CODE_ERROR
+    with pytest.raises(SystemExit):
+        checker._write_output(output=output, code=code)
+
+    captured = capsys.readouterr()
+    assert captured.out == output
+
+
+def test_pre_commit_config_shellcheck___write_output__empty(
+    mocker: MockerFixture, capsys: CaptureFixture  # type: ignore
+) -> None:
+    """
+    _write_output method must exit with no errors.
+
+    :param mocker: mock
+    :type mocker: MockerFixture
+    :param capsys: std output fixture
+    :type capsys: CaptureFixture
+    """
+    mocker.patch(
+        "sys.argv",
+        [
+            "pre_commit_config_shellcheck.py",
+            "tests/fixtures/.pre-commit-config.yaml",
+        ],
+    )
+    checker = PreCommitConfigShellcheck()  # type: ignore
+    output = ""
+    code = 0
+    with pytest.raises(SystemExit):
+        checker._write_output(output=output, code=code)
+
+    captured = capsys.readouterr()
+    assert captured.out == output
 
 
 def test_pre_commit_config_shellcheck___check_entries(
@@ -361,7 +425,8 @@ def test_pre_commit_config_shellcheck___check_entries(
     )
 
     checker = PreCommitConfigShellcheck()  # type: ignore
-    checker._check_entries()
+    with pytest.raises(SystemExit):
+        checker._check_entries()
 
     captured = capsys.readouterr()
     expected = """

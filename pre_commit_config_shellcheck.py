@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-
-import os
 import re
 import sys
 import tempfile
@@ -70,6 +68,10 @@ class CustomYamlLoader(Loader):
 class PreCommitConfigShellcheck:
     """Tool for shellchecking pre-commit config files."""
 
+    EXIT_CODE_SUCCESS: int = 0
+    EXIT_CODE_ERROR: int = 2
+    EXIT_CODE_FILE_NOT_FOUND: int = 5
+
     def __init__(self):
         """Get command line args."""
         self.options: Namespace = self._get_options()
@@ -125,10 +127,10 @@ class PreCommitConfigShellcheck:
                 )
         except FileNotFoundError:
             sys.stderr.write(f"No file {self.options.path} found\n")
-            sys.exit(os.EX_OSFILE)
+            sys.exit(self.EXIT_CODE_FILE_NOT_FOUND)
         except ScannerError:
             sys.stderr.write(f"{self.options.path} is not a YAML file\n")
-            sys.exit(os.EX_IOERR)
+            sys.exit(self.EXIT_CODE_ERROR)
 
         return file_
 
@@ -161,7 +163,7 @@ class PreCommitConfigShellcheck:
             sys.stderr.write(
                 f"An error happened while checking {self.options.path} file: incorrect format\n"  # noqa: E501
             )
-            sys.exit(os.EX_IOERR)
+            sys.exit(self.EXIT_CODE_ERROR)
 
         return result
 
@@ -183,10 +185,9 @@ class PreCommitConfigShellcheck:
 
         return []
 
-    @staticmethod
-    def _write_output(
-        entry: Dict[str, Dict[str, Union[int, str]]], output: str
-    ) -> None:
+    def _create_output(
+        self, entry: Dict[str, Dict[str, Union[int, str]]], output: str
+    ) -> Tuple[str, int]:
         """
         Edit and write shellcheck output.
 
@@ -194,10 +195,14 @@ class PreCommitConfigShellcheck:
         :type entry: Dict[str, Dict[str, Union[int, str]]]
         :param output: base output to edit and process
         :type output: str
+        :return: subprocess output with process exit code
+        :rtype: Tuple[str, int]
         """
         # regular expression for finding line number from output text:
         # returns two groups: "line #" for output replacement and line number itself
         regular = re.findall(r"In entry \".*\" (?P<switch>line (?P<line>\d+))", output)
+        if not regular:
+            return output, self.EXIT_CODE_SUCCESS
         for line_number in regular:
             # subtract 2 because of number of lines difference
             # in temporary file and source file
@@ -208,7 +213,21 @@ class PreCommitConfigShellcheck:
                 line_number[0],
                 f"on line {new_line_number}",
             )
+
+        return output, self.EXIT_CODE_ERROR
+
+    @staticmethod
+    def _write_output(output: str, code: int) -> None:
+        """
+        Write whole tool output and exit with desired code.
+
+        :param output: output to write in console:
+        :type output: str
+        :param code: exit code for the tool
+        :type code: int
+        """
         sys.stdout.write(output)
+        sys.exit(code)
 
     def _check_entry_file(
         self,
@@ -233,7 +252,7 @@ class PreCommitConfigShellcheck:
             )
         except FileNotFoundError:
             sys.stderr.write(f"No shellcheck found: '{self.options.shellcheck}'\n")
-            sys.exit(os.EX_OSFILE)
+            sys.exit(self.EXIT_CODE_FILE_NOT_FOUND)
 
         try:
             stdout, stderr = process.communicate()
@@ -242,18 +261,20 @@ class PreCommitConfigShellcheck:
             sys.stderr.write(
                 f"Failed to check entrypoint {entry['id']['id']} on line {entry['entry']['line']}: {err.stderr}"  # noqa: E501
             )
-            sys.exit(os.EX_IOERR)
+            sys.exit(self.EXIT_CODE_ERROR)
 
         if stderr:
             sys.stderr.write(
                 f"Failed to check entrypoint {entry['id']['id']} on line {entry['entry']['line']}: {stderr.decode('UTF-8')}"  # noqa: E501
             )
-            sys.exit(os.EX_IOERR)
+            sys.exit(self.EXIT_CODE_ERROR)
 
         return stdout, stderr
 
     def _check_entries(self) -> None:
         """Check the created file for possible entrypoints issues."""
+        result = ""
+        exit_ = self.EXIT_CODE_SUCCESS
         for entry in self._list_entries():
             with tempfile.NamedTemporaryFile("w+") as tmp:
                 tmp.write("#!/bin/sh\n")
@@ -264,7 +285,12 @@ class PreCommitConfigShellcheck:
                 name = f"entry \"{entry['id']['id']}\""
                 output = stdout.decode("utf-8").replace(tmp.name, name)
 
-                self._write_output(entry=entry, output=output)
+                output, code = self._create_output(entry=entry, output=output)
+                result += output
+                if code != self.EXIT_CODE_SUCCESS:
+                    exit_ = code
+
+        self._write_output(output=result, code=exit_)
 
     def check(self) -> None:
         """Check file for entrypoints and verify them."""
