@@ -45,6 +45,14 @@ You could change a default shellcheck call with directory access with the ``-s``
 
 The output from tool usage is sent to the stdout or stderr depending on the operation result.
 
+Usage as pre-commit hook
+------------------------
+.. TODO: add documentation section!!1
+.. - repo: "https://github.com/Anadea/pre-commit-config-shellcheck"
+..   rev: "v0.2.0"
+..   hooks:
+..     - id: "pre-commit-config-shellcheck"
+
 Contributing
 ------------
 

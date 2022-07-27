@@ -53,17 +53,17 @@ repos:
       pass_filenames: false
     - id: "dodgy"
       name: "dodgy"
-      stages: [ "commit" ]
+      stages: ["commit"]
       language: "system"
       entry: "dodgy -i node_modules"
-      types: [ "python" ]
+      types: ["python"]
       pass_filenames: false
     - id: "darglint"
       name: "darglint"
-      stages: [ "commit" ]
+      stages: ["commit"]
       language: "system"
       entry: "darglint"
-      types: [ "python" ]
+      types: ["python"]
     - id: "mypy"
       name: "mypy"
       stages: ["commit"]
@@ -71,27 +71,27 @@ repos:
       entry: bash -c 'PYTHONPATH="\"${PYTHONPATH}\":\"${PWD}\"" mypy'
       types: ["python"]
       pass_filenames: false
-    - id: check-manifest
-      name: check-manifest
-      stages: [commit]
-      language: system
+    - id: "check-manifest"
+      name: "check-manifest"
+      stages: ["commit"]
+      language: "system"
       pass_filenames: false
-      entry: check-manifest
-      types: [python]
-    - id: pyroma
-      name: pyroma
-      stages: [commit]
-      language: system
+      entry: "check-manifest"
+      types: ["python"]
+    - id: "pyroma"
+      name: "pyroma"
+      stages: ["commit"]
+      language: "system"
       pass_filenames: false
-      entry: pyroma -d .
-      types: [python]
-    - id: check-wheel-contents
-      name: check-wheel-contents
-      stages: [commit]
-      language: system
+      entry: "pyroma -d ."
+      types: ["python"]
+    - id: "check-wheel-contents"
+      name: "check-wheel-contents"
+      stages: ["commit"]
+      language: "system"
       pass_filenames: false
-      entry: bash -c 'make build -B && check-wheel-contents dist -c setup.cfg'
-      types: [python]
+      entry: "bash -c 'make build -B && check-wheel-contents dist -c setup.cfg'"
+      types: ["python"]
     - id: "dotenv-linter"
       name: "dotenv-linter"
       entry: "dotenv-linter"
