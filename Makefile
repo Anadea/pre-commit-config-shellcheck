@@ -50,7 +50,7 @@ release:
 	git co master && \
 	git push --all && \
 	git push --tags && \
-	make build && \
+	make build -B && \
 	make check-build && \
 	make check-upload && \
 	make upload;\

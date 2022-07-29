@@ -1,0 +1,15 @@
+name: "pre-commit config ShellCheck"
+description: "Tool for checking entry points in the pre-commit config with ShellCheck."
+inputs:
+  config:
+    description: "path to pre-commit config file"
+    required: false
+    default: ".pre-commit-config.yaml"
+outputs:
+  result:
+    description: "shell checking result"
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - "${{ inputs.config }}"
