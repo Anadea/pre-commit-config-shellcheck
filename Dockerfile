@@ -1,5 +1,6 @@
-FROM python:3.10.5-slim AS compile-image
+FROM python:3.10.5-slim
 
+ENV PRE_COMMIT_CONFIG_SHELLCHECK_VERSION="0.2.1"
 ENV VIRTUAL_ENV="/opt/.env"
 ENV PATH="/opt/app:${VIRTUAL_ENV}/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
@@ -16,9 +17,9 @@ COPY . /opt/app
 RUN set -eaux pipefail; \
     python -m venv "${VIRTUAL_ENV}"; \
     python -m pip install pip wheel --upgrade; \
-    python -m pip install /opt/app
+    python -m pip install pre-commit-config-shellcheck=="${PRE_COMMIT_CONFIG_SHELLCHECK_VERSION}"
 
 # switch user, workdir, and setup entrypoint
 USER app
 WORKDIR /opt/app
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/opt/app/entrypoint.sh"]

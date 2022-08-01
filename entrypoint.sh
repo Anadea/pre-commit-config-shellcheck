@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 
-set -e;
+set -eau pipefail; \
 
-RESULT=$(pre_commit_config_shellcheck.py "${INPUT_CONFIG}");
+INPUT_CONFIG="${INPUT_CONFIG:-.pre-commit-config.yaml}"; \
+export INPUT_CONFIG; \
 
-echo "::set-output name=result::\"${RESULT}\"";
+/opt/.env/bin/pre_commit_config_shellcheck.py "${INPUT_CONFIG}"
