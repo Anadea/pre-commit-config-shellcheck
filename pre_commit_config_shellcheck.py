@@ -17,7 +17,7 @@ __all__: List[str] = ["main", "PreCommitConfigShellcheck"]
 
 
 # metadata
-VERSION = (0, 2, 1)
+VERSION = (0, 3, 0)
 __version__ = ".".join(map(str, VERSION))
 
 
