@@ -56,6 +56,18 @@ Also, it can be used as a `pre-commit <https://pre-commit.com/>`_ hook out of th
       hooks:
         - id: "pre-commit-config-shellcheck"
 
+Usage as GitHub action
+----------------------
+Also, it can be used as a `GitHub action <https://github.com/features/actions/>`_ out of the box. Just add it to yours workflow:
+
+.. code-block:: yaml
+
+  - name: "pre-commit-config-shellcheck"
+    uses: "Anadea/pre-commit-config-shellcheck@0.3.0"
+    id: "pre-commit-config-shellcheck"
+    with:
+      config: ".pre-commit-config.yaml"
+
 
 Contributing
 ------------
@@ -110,7 +122,7 @@ pre-commit-config-shellcheck uses the MIT license. Please check the MIT-LICENSE 
 
 Contacts
 --------
-**Project Website**: https://github.com/anadea/pre-commit-config-shellcheck/
+**Project Website**: https://github.com/Anadea/pre-commit-config-shellcheck/
 
 **Author**: Anadea
 
