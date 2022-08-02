@@ -125,6 +125,6 @@ repos:
       - id: "forbid-new-submodules"
       - id: "trailing-whitespace"
 - repo: "https://github.com/Anadea/pre-commit-config-shellcheck"
-  rev: "0.3.1"
+  rev: "0.3.2"
   hooks:
     - id: "pre-commit-config-shellcheck"

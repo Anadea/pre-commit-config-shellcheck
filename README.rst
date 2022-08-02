@@ -52,7 +52,7 @@ Also, it can be used as a `pre-commit <https://pre-commit.com/>`_ hook out of th
 .. code-block:: yaml
 
   - repo: "https://github.com/Anadea/pre-commit-config-shellcheck"
-    rev: "0.3.1"
+    rev: "0.3.2"
       hooks:
         - id: "pre-commit-config-shellcheck"
 
@@ -63,7 +63,7 @@ Also, it can be used as a `GitHub action <https://github.com/features/actions/>`
 .. code-block:: yaml
 
   - name: "pre-commit-config-shellcheck"
-    uses: "Anadea/pre-commit-config-shellcheck@0.3.1"
+    uses: "Anadea/pre-commit-config-shellcheck@0.3.2"
     id: "pre-commit-config-shellcheck"
     with:
       config: ".pre-commit-config.yaml"
