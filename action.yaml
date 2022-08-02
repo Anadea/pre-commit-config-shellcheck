@@ -12,7 +12,7 @@ inputs:
 outputs:
   shellcheck-result:
     description: "shellchecking result"
-    value: "${{ steps.random-number-generator.outputs.shellcheck-result }}"
+    value: "${{ steps.run-pre-commit-config-shellcheck.outputs.shellcheck-result }}"
 runs:
   using: "composite"
   steps:
@@ -27,7 +27,7 @@ runs:
       id: "install-pre-commit-config-shellcheck"
       env:
         VIRTUAL_ENV: "/opt/.env"
-        PRE_COMMIT_CONFIG_SHELLCHECK_VERSION: "0.3.2"
+        PRE_COMMIT_CONFIG_SHELLCHECK_VERSION: "0.3.3"
       shell: "bash"
       run: |
         set -eau pipefail; \
