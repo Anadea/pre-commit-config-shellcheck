@@ -47,8 +47,7 @@ coveralls:
 
 release:
 	make bumpversion && \
-	git co master && \
-	git push --all && \
+	git push && \
 	git push --tags && \
 	make build -B && \
 	make check-build && \
