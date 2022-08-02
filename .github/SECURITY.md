@@ -7,7 +7,7 @@ security policy is very simple: supported only the last major or minor branch.
 
 | Version | Supported          |
 |---------| ------------------ |
-| 0.2.x   | :white_check_mark: |
+| 0.3.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 

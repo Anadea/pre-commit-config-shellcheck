@@ -26,14 +26,20 @@ runs:
     - name: "Install pre-commit-config-shellcheck: ${{ env.PRE_COMMIT_CONFIG_SHELLCHECK_VERSION }}"
       id: "install-pre-commit-config-shellcheck"
       env:
+        VIRTUAL_ENV: "/opt/.env"
         PRE_COMMIT_CONFIG_SHELLCHECK_VERSION: "0.3.1"
-      shell: "bash"
-      run: "python -m pip install pre-commit-config-shellcheck==${{ env.PRE_COMMIT_CONFIG_SHELLCHECK_VERSION }}"
-    - name: "Run pre-commit-config-shellcheck: ${{ inputs.config }}"
-      id: "run-pre-commit-config-shellcheck"
       shell: "bash"
       run: |
         set -eau pipefail; \
-        SHELLCHECK_RESULT=pre_commit_config_shellcheck.py ${{ inputs.config }}; \
+        python -m venv "${VIRTUAL_ENV}"; \
+        python -m pip install pre-commit-config-shellcheck==${{ env.PRE_COMMIT_CONFIG_SHELLCHECK_VERSION }}
+    - name: "Run pre-commit-config-shellcheck: ${{ inputs.config }}"
+      id: "run-pre-commit-config-shellcheck"
+      env:
+        VIRTUAL_ENV: "/opt/.env"
+      shell: "bash"
+      run: |
+        set -eau pipefail; \
+        SHELLCHECK_RESULT=$(pre_commit_config_shellcheck.py ${{ inputs.config }}); \
         echo "${SHELLCHECK_RESULT}"; \
         echo "::set-output name=shellcheck-result::\"${SHELLCHECK_RESULT}\""
