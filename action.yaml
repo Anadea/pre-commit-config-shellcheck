@@ -27,7 +27,7 @@ runs:
       id: "install-pre-commit-config-shellcheck"
       env:
         VIRTUAL_ENV: "/opt/.env"
-        PRE_COMMIT_CONFIG_SHELLCHECK_VERSION: "0.3.3"
+        PRE_COMMIT_CONFIG_SHELLCHECK_VERSION: "0.3.4"
       shell: "bash"
       run: |
         set -eau pipefail; \
