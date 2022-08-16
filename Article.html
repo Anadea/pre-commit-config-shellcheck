@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
+<title>pre-commit-config-shellcheck</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 7952 2016-07-26 18:15:59Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: grey; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="pre-commit-config-shellcheck">
+<h1 class="title">pre-commit-config-shellcheck</h1>
+
+<div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#id1" id="id8">Передісторія</a></li>
+<li><a class="reference internal" href="#id2" id="id9">Яку проблему вирішує</a></li>
+<li><a class="reference internal" href="#id3" id="id10">Як працює</a><ul>
+<li><a class="reference internal" href="#shellcheck" id="id11">Shellcheck</a></li>
+<li><a class="reference internal" href="#id4" id="id12">Перевірка файла</a></li>
+<li><a class="reference internal" href="#id5" id="id13">Робота з процесами</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7" id="id14">Зручність використання</a></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id8">Передісторія</a></h1>
+<p>Повторна перевірка написаного коду може бути складним, ненадійним і замороченим завданням для програміста.
+Нещодавно, під час рефакторингу коду ми помітили декілька помилок у shell коді всередині файла налаштувань пре-коміту, які існували там впродовж довгого часу, не видаючи попереджень.
+Саме тому необхідність перевіряти код вручну хотілося б мінімізувати, або автоматизувати.
+Для цього було створено утіліту <a class="reference external" href="https://github.com/Anadea/pre-commit-config-shellcheck">pre-commit-config-shellcheck</a>.</p>
+</div>
+<div class="section" id="id2">
+<h1><a class="toc-backref" href="#id9">Яку проблему вирішує</a></h1>
+<p>Ми створили інструмент, що дозволяє зменшити кількість помилок і неточностей у проектах шляхом автоматичної перевірки файла налаштувань пре-коміту.
+Ця перевірка проводиться за допомогою іншого інструмента - <tt class="docutils literal">Shellcheck</tt>.</p>
+</div>
+<div class="section" id="id3">
+<h1><a class="toc-backref" href="#id10">Як працює</a></h1>
+<div class="section" id="shellcheck">
+<h2><a class="toc-backref" href="#id11">Shellcheck</a></h2>
+<p><a class="reference external" href="https://github.com/koalaman/shellcheck">Shellcheck</a> - інструмент для статичного аналізу shell скриптів (A shell script static analysis tool).
+Він вміє виявляти як синтаксичні проблеми, що можуть виникати у новачків, так і складніші семантичні проблеми, що можуть викликати неочікуване поводження команд.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id12">Перевірка файла</a></h2>
+<p>Для використання Shellcheck йому передається файл зі збереженим shell кодом.
+Оскільки файл <tt class="docutils literal"><span class="pre">.pre-commit-config.yaml</span></tt> містить в собі не лише перелік команд, записаних shell кодом, то робота даної утіліти буде неправильною.
+Через це наш інструмент проводить попередню підготовку вхідних точок до перевірки, що полягає у створенні малих тимчасових файлів для точок входу, кожен з яких окремо перевіряється інструментом <tt class="docutils literal">Shellcheck</tt>.</p>
+</div>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id13">Робота з процесами</a></h2>
+<p>Згаданий вище <tt class="docutils literal">Shellcheck</tt> - консольна утіліта, що не має бібліотек-адаптерів для різних мов програмування,
+тому для кожного створеного файлу створюється підпроцес з виконанням перевірки.
+Результати виконання підпроцесів збираються і на їх основі будується вивід, який буде містити перелік знайдених неточностей разом із їхнім місцем знаходження у файлі.</p>
+<p><a class="reference external" href="https://asciinema.org/a/514275">Приклад використання і виводу</a> (має бути embedded елемент)</p>
+</div>
+</div>
+<div class="section" id="id7">
+<h1><a class="toc-backref" href="#id14">Зручність використання</a></h1>
+<p>Задля збереження простоти і зручності використання цієї утіліти створено декілька шляхів використання:</p>
+<ul class="simple">
+<li>Як утіліта командного рядку</li>
+</ul>
+<pre class="code bash literal-block">
+$ pip install pre-commit-config-shellcheck
+$ pre_commit_config_shellcheck.py .pre-commit-config.yaml
+</pre>
+<ul class="simple">
+<li>Як <a class="reference external" href="https://pre-commit.com/">pre-commit</a> hook</li>
+</ul>
+<pre class="code yaml literal-block">
+<span class="comment single"># .pre-commit-config.yaml</span>
+<span class="punctuation indicator">-</span> <span class="name tag">repo</span><span class="punctuation">:</span> <span class="literal string">&quot;https://github.com/Anadea/pre-commit-config-shellcheck&quot;</span>
+  <span class="name tag">rev</span><span class="punctuation">:</span> <span class="literal string">&quot;0.3.3&quot;</span>
+    <span class="name tag">hooks</span><span class="punctuation">:</span>
+      <span class="punctuation indicator">-</span> <span class="name tag">id</span><span class="punctuation">:</span> <span class="literal string">&quot;pre-commit-config-shellcheck&quot;</span>
+</pre>
+<ul class="simple">
+<li>Та як <a class="reference external" href="https://github.com/features/actions/">GitHub action</a></li>
+</ul>
+<pre class="code literal-block">
+- name: &quot;pre-commit-config-shellcheck&quot;
+  uses: &quot;Anadea/pre-commit-config-shellcheck&#64;0.3.3&quot;
+  id: &quot;pre-commit-config-shellcheck&quot;
+  with:
+    config: &quot;.pre-commit-config.yaml&quot;
+</pre>
+</div>
+</div>
+</body>
+</html>
