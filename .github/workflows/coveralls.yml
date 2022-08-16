@@ -1,0 +1,42 @@
+name: "coveralls"
+on:
+  workflow_dispatch:
+  workflow_call:
+env:
+  NAME: "pre-commit-config-shellcheck"
+  DEFAULT_PYTHON_VERSION: "3.10"
+jobs:
+  coveralls:
+    name: "coveralls"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Git clone"
+        id: "git-clone"
+        uses: "actions/checkout@v3.0.2"
+      - name: "Set up Python ${{ env.DEFAULT_PYTHON_VERSION }}"
+        id: "set-up-python"
+        uses: "actions/setup-python@v4.2.0"
+        with:
+          python-version: "${{ env.DEFAULT_PYTHON_VERSION }}"
+      - name: "Pip cache"
+        id: "pip-cache"
+        uses: "actions/cache@v3.0.7"
+        with:
+          path: "~/.cache/pip"
+          key: "${{ runner.os }}-pip-${{ hashFiles('setup.cfg') }}"
+          restore-keys: |
+            "${{ runner.os }}-pip-"
+      - name: "Temporarily save coverage statistics"
+        id: "temporarily-save-coverage-statistics"
+        uses: "actions/cache@v3.0.7"
+        with:
+          path: ".coverage"
+          key: ".coverage-${{ github.run_id }}-${{ github.run_number }}"
+      - name: "Install requirements"
+        id: "install-requirements"
+        run: "make install"
+      - name: "Upload coverage report to Coveralls"
+        id: "upload-coverage-report-to-coveralls"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: "coveralls --service=github"

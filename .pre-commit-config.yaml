@@ -1,0 +1,137 @@
+repos:
+- repo: "local"
+  hooks:
+    - id: "seed-isort-config"
+      name: "seed-isort-config"
+      stages: ["commit"]
+      language: "system"
+      pass_filenames: false
+      entry: "seed-isort-config"
+      types: ["python"]
+    - id: "removestar"
+      name: "removestar"
+      stages: ["commit"]
+      language: "system"
+      entry: "removestar -i \"${NAME}\""
+      types: ["python"]
+    - id: "isort"
+      name: "isort"
+      stages: ["commit"]
+      language: "system"
+      entry: "isort"
+      types: ["python"]
+    - id: "black"
+      name: "black"
+      stages: ["commit"]
+      language: "system"
+      entry: "bash -c 'black .'"
+      types: ["python"]
+    - id: "yesqa"
+      name: "yesqa"
+      stages: ["commit"]
+      language: "system"
+      pass_filenames: false
+      entry: "yesqa"
+      types: ["python"]
+    - id: "flake8"
+      name: "flake8"
+      stages: ["commit"]
+      language: "system"
+      entry: "flake8"
+      types: ["python"]
+    - id: "interrogate"
+      name: "interrogate"
+      stages: ["commit"]
+      language: "system"
+      entry: "interrogate . -I -M -e .direnv"
+      types: ["python"]
+    - id: "pylint"
+      name: "pylint"
+      stages: ["commit"]
+      language: "system"
+      entry: "pylint \"${NAME}\" tests"
+      types: ["python"]
+    - id: "bandit"
+      name: "bandit"
+      stages: [ "commit" ]
+      language: "system"
+      entry: "bandit -r . --ini=setup.cfg"
+      types: ["python"]
+      pass_filenames: false
+    - id: "dodgy"
+      name: "dodgy"
+      stages: ["commit"]
+      language: "system"
+      entry: "dodgy -i node_modules"
+      types: ["python"]
+      pass_filenames: false
+    - id: "darglint"
+      name: "darglint"
+      stages: ["commit"]
+      language: "system"
+      entry: "darglint"
+      types: ["python"]
+    - id: "mypy"
+      name: "mypy"
+      stages: ["commit"]
+      language: "system"
+      entry: bash -c 'PYTHONPATH="\"${PYTHONPATH}\":\"${PWD}\"" mypy'
+      types: ["python"]
+      pass_filenames: false
+    - id: "check-manifest"
+      name: "check-manifest"
+      stages: ["commit"]
+      language: "system"
+      pass_filenames: false
+      entry: "check-manifest"
+      types: ["python"]
+    - id: "pyroma"
+      name: "pyroma"
+      stages: ["commit"]
+      language: "system"
+      pass_filenames: false
+      entry: "pyroma -d ."
+      types: ["python"]
+    - id: "check-wheel-contents"
+      name: "check-wheel-contents"
+      stages: ["commit"]
+      language: "system"
+      pass_filenames: false
+      entry: "bash -c 'make build -B && check-wheel-contents dist -c setup.cfg'"
+      types: ["python"]
+    - id: "dotenv-linter"
+      name: "dotenv-linter"
+      entry: "dotenv-linter"
+      language: "system"
+      stages: ["commit"]
+      types: ["text"]
+      files: '\.env*'
+      exclude: ".envrc"
+    - id: "rstcheck"
+      name: "rstcheck"
+      entry: "rstcheck"
+      language: "system"
+      stages: ["commit"]
+      types: ["rst"]
+- repo: "https://github.com/pre-commit/pre-commit-hooks"
+  rev: "v4.3.0"
+  hooks:
+    - id: "check-added-large-files"
+      args: ["--maxkb=2048"]
+    - id: "check-ast"
+    - id: "check-case-conflict"
+    - id: "check-docstring-first"
+    - id: "check-executables-have-shebangs"
+    - id: "check-merge-conflict"
+    - id: "check-symlinks"
+    - id: "check-toml"
+    - id: "check-yaml"
+    - id: "debug-statements"
+    - id: "detect-private-key"
+    - id: "end-of-file-fixer"
+    - id: "forbid-new-submodules"
+    - id: "trailing-whitespace"
+- repo: "https://github.com/Anadea/pre-commit-config-shellcheck"
+  rev: "0.3.3"
+  hooks:
+    - id: "pre-commit-config-shellcheck"

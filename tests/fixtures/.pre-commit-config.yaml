@@ -1,0 +1,18 @@
+repos:
+- repo: "local"
+  hooks:
+    - id: "seed-isort-config"
+      name: "seed-isort-config"
+      stages: ["commit"]
+      language: "system"
+      pass_filenames: false
+      entry: |
+        seed-isort-config
+        sleep infinity
+      types: ["python"]
+    - id: "removestar"
+      name: "removestar"
+      stages: ["commit"]
+      language: "system"
+      entry: "removestar -i ${NAME}"
+      types: ["python"]

@@ -1,0 +1,8 @@
+- id: "pre-commit-config-shellcheck"
+  name: "pre-commit-config-shellcheck"
+  description: "checks pre-commit config entrypoints using ShellCheck"
+  entry: "pre_commit_config_shellcheck.py"
+  language: "python"
+  stages: ["commit", "push", "manual"]
+  types: ["yaml"]
+  files: '^\.pre-commit-config\.yaml$'

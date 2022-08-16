@@ -1,0 +1,45 @@
+name: "pre-commit config ShellCheck"
+description: "Tool for checking entry points in the pre-commit config with ShellCheck."
+author: "Anadea <python-dev@anadeainc.com>"
+branding:
+  icon: "terminal"
+  color: "gray-dark"
+inputs:
+  config:
+    description: "path to pre-commit config file"
+    required: false
+    default: ".pre-commit-config.yaml"
+outputs:
+  shellcheck-result:
+    description: "shellchecking result"
+    value: "${{ steps.run-pre-commit-config-shellcheck.outputs.shellcheck-result }}"
+runs:
+  using: "composite"
+  steps:
+    - name: "Set up Python: ${{ env.DEFAULT_PYTHON_VERSION }}"
+      id: "set-up-python"
+      uses: "actions/setup-python@v4.2.0"
+      env:
+        DEFAULT_PYTHON_VERSION: "3.10"
+      with:
+        python-version: "${{ env.DEFAULT_PYTHON_VERSION }}"
+    - name: "Install pre-commit-config-shellcheck: ${{ env.PRE_COMMIT_CONFIG_SHELLCHECK_VERSION }}"
+      id: "install-pre-commit-config-shellcheck"
+      env:
+        VIRTUAL_ENV: "/opt/.env"
+        PRE_COMMIT_CONFIG_SHELLCHECK_VERSION: "0.3.3"
+      shell: "bash"
+      run: |
+        set -eau pipefail; \
+        python -m venv "${VIRTUAL_ENV}"; \
+        python -m pip install pre-commit-config-shellcheck==${{ env.PRE_COMMIT_CONFIG_SHELLCHECK_VERSION }}
+    - name: "Run pre-commit-config-shellcheck: ${{ inputs.config }}"
+      id: "run-pre-commit-config-shellcheck"
+      env:
+        VIRTUAL_ENV: "/opt/.env"
+      shell: "bash"
+      run: |
+        set -eau pipefail; \
+        SHELLCHECK_RESULT=$(pre_commit_config_shellcheck.py ${{ inputs.config }}); \
+        echo "${SHELLCHECK_RESULT}"; \
+        echo "::set-output name=shellcheck-result::\"${SHELLCHECK_RESULT}\""

@@ -1,0 +1,30 @@
+name: "build"
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+  workflow_dispatch:
+  workflow_call:
+env:
+  NAME: "pre-commit-config-shellcheck"
+  DEFAULT_PYTHON_VERSION: "3.10"
+jobs:
+  check-requirements:
+    uses: "./.github/workflows/check-requirements.yml"
+  check:
+    name: "${{ matrix.toxenv }}"
+    uses: "./.github/workflows/check.yml"
+  test:
+    name: "${{ matrix.python-version }}"
+    uses: "./.github/workflows/test.yml"
+    if: success()
+    needs: ["check"]
+  coveralls:
+    uses: "./.github/workflows/coveralls.yml"
+    if: success()
+    needs: ["test", "check"]
