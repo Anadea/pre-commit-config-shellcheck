@@ -18,7 +18,7 @@ runs:
   steps:
     - name: "Set up Python: ${{ env.DEFAULT_PYTHON_VERSION }}"
       id: "set-up-python"
-      uses: "actions/setup-python@v4.2.0"
+      uses: "actions/setup-python@v4.4.0"
       env:
         DEFAULT_PYTHON_VERSION: "3.10"
       with:
